@@ -1,35 +1,34 @@
 <template>
-  <v-app>
-    <v-toolbar app>
-      <v-toolbar-title class="headline text-uppercase">
-        <span>Vuetify</span>
-        <span class="font-weight-light">MATERIAL DESIGN</span>
-      </v-toolbar-title>
-      <v-spacer></v-spacer>
-      <v-btn
-        flat
-        href="https://github.com/vuetifyjs/vuetify/releases/latest"
-        target="_blank"
-      >
-        <span class="mr-2">Latest Release</span>
-        <v-icon>open_in_new</v-icon>
-      </v-btn>
-    </v-toolbar>
-
-    <v-content>
-      <router-view/>
-    </v-content>
-  </v-app>
+  <div id="app">
+    <ArticlesList/>
+    <link href="https://fonts.googleapis.com/css?family=Roboto:100,300" rel="stylesheet">
+    <a class="news-api-link" href="NewsAPI.org">powered by NewsAPI.org</a>
+  </div>
 </template>
 
 <script>
+import ArticlesList from "./components/ArticlesList";
 
 export default {
-  name: 'App',
-  data () {
-    return {
-      //
-    }
+  name: "App",
+  components: {
+    ArticlesList
+  }
+};
+</script>
+
+<style lang="scss" scoped>
+#app {
+  font-family: "Roboto", sans-serif;
+
+  .news-api-link {
+    display: flex;
+    justify-content: center;
+    position: fixed;
+    bottom: 0;
+    right: 0;
+    width: 100%;
+    background: #fff;
   }
 }
-</script>
+</style>
