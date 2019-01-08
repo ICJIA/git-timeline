@@ -4,7 +4,6 @@
   <v-container style="margin-top: 80px">
     <v-timeline>
       <v-timeline-item v-for="(event, index) in data" :key="index" color="red lighten-2" small>
-        <!-- <span slot="opposite">{{event.created_at}}</span> -->
         <v-card class="elevation-2">
           <v-card-title class="headline">{{event.type}}</v-card-title>
           <v-card-text>
@@ -26,6 +25,7 @@
 
 <script>
 import axios from "axios";
+import lodash from "lodash";
 import config from "@/config";
 const parse = require("parse-link-header");
 import moment from "moment";
@@ -43,7 +43,7 @@ export default {
       pushEvents: []
     };
   },
-  created() {},
+
   mounted() {
     console.log(this.page);
     this.$store.commit("START_LOADER");
@@ -56,25 +56,31 @@ export default {
       .then(response => {
         this.parseLinkHeader(response.headers.link);
         this.data = response.data;
-        this.structureEvents(response.data);
+
+        this.structureEvents(this.data);
+        console.log(this.pushEvents);
         this.$store.commit("STOP_LOADER");
       })
       .catch(err => {
-        document.body.textContent = "Error: " + err.stack;
+        console.log(err);
       });
   },
   methods: {
     async loadMore() {
       this.$store.commit("START_LOADER");
       this.page += 1;
-      console.log("Loading ...", this.page);
+      // console.log("Loading ...", this.page);
       if (!this.isLastPage) {
         axios
           .get(
             `/users/${config.user}/events?page=${this.page}&per_page=${
               config.perPage
             }`,
-            {}
+            {
+              headers: {
+                Authorization: "token " + process.env.VUE_APP_GITHUB_TOKEN
+              }
+            }
           )
           .then(response => {
             this.data = [...this.data, ...response.data];
@@ -82,17 +88,17 @@ export default {
             this.$store.commit("STOP_LOADER");
           })
           .catch(err => {
-            document.body.textContent = "Error: " + err.stack;
+            // document.body.textContent = "Error: " + err.stack;
             this.$store.commit("STOP_LOADER");
           });
       } else {
         this.$store.commit("STOP_LOADER");
-        console.log("THE END");
+        // console.log("THE END");
       }
     },
     parseLinkHeader(linkHeader) {
       let parsed = parse(linkHeader);
-      console.log(parsed);
+      // console.log(parsed);
       if (parsed.next) {
         this.next = parsed.next;
       } else {
@@ -100,16 +106,19 @@ export default {
       }
     },
     structureEvents(data) {
+      this.startDate = moment(data[0]["created_at"]);
+      this.endDate = moment(data[data.length - 1]["created_at"]);
+      this.duration = this.startDate.diff(this.endDate, "days");
+
       data.forEach(e => {
-        // if (e.type === "PushEvent") {
-        //   if (!this.pushEvents[e.repo.name]) {
-        //     this.pushEvents[e.repo.name] = [];
-        //   }
-        // }
-        let eventDate = moment().format("MM-DD-YYYY");
-        console.log(eventDate);
+        let created_at_short = moment(e.created_at).format("YYYY-MM-DD");
+        e.created_at_short = created_at_short;
+        if (e.type === "PushEvent") {
+          this.pushEvents.push(e);
+        }
       });
-      // console.log(this.pushEvents);
+
+      this.$forceUpdate();
     }
   },
   computed: {
