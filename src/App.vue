@@ -1,34 +1,34 @@
 <template>
-  <div id="app">
-    <ArticlesList/>
-    <link href="https://fonts.googleapis.com/css?family=Roboto:100,300" rel="stylesheet">
-    <a class="news-api-link" href="NewsAPI.org">powered by NewsAPI.org</a>
-  </div>
+  <v-app>
+    <nav-primary></nav-primary>
+    <div v-if="isLoading" style="z-index: 1000">
+      <v-progress-linear
+        :indeterminate="true"
+        color="blue-grey lighten-3"
+        style="position: fixed; top: -15px;"
+        height="5"
+      ></v-progress-linear>
+    </div>
+
+    <v-content>
+      <router-view/>
+    </v-content>
+  </v-app>
 </template>
 
 <script>
-import ArticlesList from "./components/ArticlesList";
-
+import NavPrimary from "@/components/NavPrimary";
 export default {
   name: "App",
   components: {
-    ArticlesList
+    NavPrimary
+  },
+  computed: {
+    isLoading() {
+      return this.$store.getters.isLoading;
+    }
   }
 };
 </script>
 
-<style lang="scss" scoped>
-#app {
-  font-family: "Roboto", sans-serif;
 
-  .news-api-link {
-    display: flex;
-    justify-content: center;
-    position: fixed;
-    bottom: 0;
-    right: 0;
-    width: 100%;
-    background: #fff;
-  }
-}
-</style>
