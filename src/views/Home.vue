@@ -2,6 +2,7 @@
 
 <template>
   <v-container style="margin-top: 80px">
+    <git-hub-logo></git-hub-logo>
     <event-toggle></event-toggle>
     <div class="mt-5" style="border-top: 1px solid #ccc;">
       <v-timeline>
@@ -35,8 +36,9 @@ import moment from "moment";
 import Trigger from "@/components/Trigger";
 import EventList from "@/components/EventList";
 import EventToggle from "@/components/EventToggle";
+import GitHubLogo from "@/components/GitHubLogo";
 export default {
-  components: { Trigger, EventList, EventToggle },
+  components: { Trigger, EventList, EventToggle,GitHubLogo },
   data() {
     return {
       events: [],
@@ -141,3 +143,5 @@ export default {
   }
 };
 </script>
+
+
