@@ -122,41 +122,72 @@ export default {
       this.$forceUpdate();
     },
     displayEvent(event) {
-      let type, repo, message, time, url;
+      let type, repo, message, time, repoURL, commitURL;
+      let baseURL = "https://github.com/";
       switch (event.type) {
         case "PushEvent":
           type = "Pushed Commit";
           repo = event.repo.name;
-          url = event.repo.url;
+          repoURL = `${baseURL}${event.repo.name}`;
           message = event.payload.commits[0].message;
           time = moment(event.created_at).format("h:mm a");
           break;
         case "CreateEvent":
           type = "Created New Repository";
           repo = event.repo.name;
-          url = event.repo.url;
+          repoURL = `${baseURL}${event.repo.name}`;
           message = "";
           time = moment(event.created_at).format("h:mm a");
           break;
         case "ReleaseEvent":
           type = "Released New Version";
           repo = event.repo.name;
-          url = event.repo.url;
+          repoURL = `${baseURL}${event.repo.name}`;
           message = event.payload.release.tag_name;
           time = moment(event.created_at).format("h:mm a");
           break;
         case "WatchEvent":
           type = "Began Watching";
           repo = event.repo.name;
-          url = event.repo.url;
+          repoURL = `${baseURL}${event.repo.name}`;
           message = "";
           time = "";
+          break;
+        case "DeleteEvent":
+          type = "Deleted Repository";
+          repo = event.repo.name;
+          repoURL = `${baseURL}${event.repo.name}`;
+          message = "";
+          time = "";
+          break;
+        case "PullRequestEvent":
+          type = "Pull Request";
+          repo = event.repo.name;
+          repoURL = `${baseURL}${event.repo.name}`;
+          message = event.payload.pull_request.title;
+          time = moment(event.created_at).format("h:mm a");
+          break;
+        case "IssueCommentEvent":
+          type = "Issued Comment";
+          repo = event.repo.name;
+          repoURL = `${baseURL}${event.repo.name}`;
+          message = `
+          <h4>${event.payload.issue.title}</h4>
+          <p class="ml-3 mr-3 mt-2">${event.payload.comment.body}</p>`;
+          time = moment(event.created_at).format("h:mm a");
+          break;
+        case "PublicEvent":
+          type = "Made Private Repo Public";
+          repo = event.repo.name;
+          repoURL = `${baseURL}${event.repo.name}`;
+          message = ``;
+          time = moment(event.created_at).format("h:mm a");
           break;
       }
       let template = ` 
       <h3>${time}</h3>
       <h2>${type}</h2>
-      <h4><a href="${url}">${repo}</a></h4>
+      <h4><a href="${repoURL}">${repo}</a></h4>
       <p>${message}</p>`;
       return template;
     },
