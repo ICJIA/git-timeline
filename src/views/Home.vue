@@ -3,12 +3,13 @@
 <template>
   <v-container style="margin-top: 80px">
     <v-timeline>
-      <v-timeline-item v-for="(event, index) in data" :key="index" color="red lighten-2" small>
+      <v-timeline-item v-for="(event, index) in events" :key="index" color="red lighten-2" small>
         <v-card class="elevation-2">
-          <v-card-title class="headline">{{event.type}}</v-card-title>
+          <v-card-title class="headline">{{displayDate(event)}}</v-card-title>
           <v-card-text>
-            <div>{{event.payload}}</div>
-            <div>{{event.created_at}}</div>
+            <span v-for="(e, index) in event" :key="index">
+              <div class="mb-5" v-html="displayEvent(e)"></div>
+            </span>
           </v-card-text>
         </v-card>
       </v-timeline-item>
@@ -25,7 +26,7 @@
 
 <script>
 import axios from "axios";
-import lodash from "lodash";
+import _ from "lodash";
 import config from "@/config";
 const parse = require("parse-link-header");
 import moment from "moment";
@@ -58,7 +59,7 @@ export default {
         this.data = response.data;
 
         this.structureEvents(this.data);
-        console.log(this.pushEvents);
+        //console.log(this.pushEvents);
         this.$store.commit("STOP_LOADER");
       })
       .catch(err => {
@@ -85,6 +86,7 @@ export default {
           .then(response => {
             this.data = [...this.data, ...response.data];
             this.parseLinkHeader(response.headers.link);
+            this.structureEvents(this.data);
             this.$store.commit("STOP_LOADER");
           })
           .catch(err => {
@@ -113,12 +115,50 @@ export default {
       data.forEach(e => {
         let created_at_short = moment(e.created_at).format("YYYY-MM-DD");
         e.created_at_short = created_at_short;
-        if (e.type === "PushEvent") {
-          this.pushEvents.push(e);
-        }
       });
+      let result = _.chain(data)
+        .groupBy("created_at_short")
+        .value();
 
+      this.events = result;
       this.$forceUpdate();
+    },
+    displayEvent(event) {
+      let type, repo, message, time;
+      switch (event.type) {
+        case "PushEvent":
+          type = "Pushed Commit";
+          repo = event.repo.name;
+          message = event.payload.commits[0].message;
+          time = moment(event.created_at).format("h:mm a");
+          break;
+        case "CreateEvent":
+          type = "Created New Repository";
+          repo = event.repo.name;
+          message = "";
+          time = moment(event.created_at).format("h:mm a");
+          break;
+        case "ReleaseEvent":
+          type = "Released New Version";
+          repo = event.repo.name;
+          message = event.payload.release.tag_name;
+          time = moment(event.created_at).format("h:mm a");
+          break;
+        case "WatchEvent":
+          type = "Began Watching";
+          repo = event.repo.name;
+          message = "";
+          time = "";
+          break;
+      }
+      let template = `<h2>${type}</h2>
+      <h3>${time}</h3>
+      <h4>${repo}</h4>
+      <p>${message}</p>`;
+      return template;
+    },
+    displayDate(event) {
+      return moment(event[0].created_at_short).format("dddd, MMMM DD, YYYY");
     }
   },
   computed: {

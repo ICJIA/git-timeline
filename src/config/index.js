@@ -1,6 +1,6 @@
 const config = {
   user: "cschweda",
-  perPage: 50
+  perPage: 25
 };
 
 export default config;
