@@ -80,7 +80,7 @@ export default {
 
 <style scoped>
 .v-btn--small.shrink {
-  font-size: 12px !important;
+  font-size: 13px !important;
   font-weight: 900;
 }
 .fixed {
