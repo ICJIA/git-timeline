@@ -5,7 +5,7 @@
     <v-toolbar-title class="white--text">Title</v-toolbar-title>
 
     <v-spacer></v-spacer>
-    <v-progress-circular indeterminate color="red" v-if="isLoading"></v-progress-circular>
+    <v-progress-circular indeterminate color="secondary" v-if="isLoading"></v-progress-circular>
   </v-toolbar>
 </template>
 

@@ -3,7 +3,7 @@
 <template>
   <v-container style="margin-top: 80px">
     <v-timeline>
-      <v-timeline-item v-for="(event, index) in events" :key="index" color="red lighten-2" small>
+      <v-timeline-item v-for="(event, index) in events" :key="index" color="secondary" small>
         <v-card class="elevation-2">
           <v-card-title class="headline">{{displayDate(event)}}</v-card-title>
           <v-card-text>
@@ -90,12 +90,10 @@ export default {
             this.$store.commit("STOP_LOADER");
           })
           .catch(err => {
-            // document.body.textContent = "Error: " + err.stack;
             this.$store.commit("STOP_LOADER");
           });
       } else {
         this.$store.commit("STOP_LOADER");
-        // console.log("THE END");
       }
     },
     parseLinkHeader(linkHeader) {
@@ -124,36 +122,41 @@ export default {
       this.$forceUpdate();
     },
     displayEvent(event) {
-      let type, repo, message, time;
+      let type, repo, message, time, url;
       switch (event.type) {
         case "PushEvent":
           type = "Pushed Commit";
           repo = event.repo.name;
+          url = event.repo.url;
           message = event.payload.commits[0].message;
           time = moment(event.created_at).format("h:mm a");
           break;
         case "CreateEvent":
           type = "Created New Repository";
           repo = event.repo.name;
+          url = event.repo.url;
           message = "";
           time = moment(event.created_at).format("h:mm a");
           break;
         case "ReleaseEvent":
           type = "Released New Version";
           repo = event.repo.name;
+          url = event.repo.url;
           message = event.payload.release.tag_name;
           time = moment(event.created_at).format("h:mm a");
           break;
         case "WatchEvent":
           type = "Began Watching";
           repo = event.repo.name;
+          url = event.repo.url;
           message = "";
           time = "";
           break;
       }
-      let template = `<h2>${type}</h2>
+      let template = ` 
       <h3>${time}</h3>
-      <h4>${repo}</h4>
+      <h2>${type}</h2>
+      <h4><a href="${url}">${repo}</a></h4>
       <p>${message}</p>`;
       return template;
     },
