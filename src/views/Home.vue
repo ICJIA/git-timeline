@@ -1,10 +1,9 @@
 
 
 <template>
-  <v-container style="margin-top: 80px">
-    <git-hub-logo></git-hub-logo>
+  <v-container style="margin-top: 40px">
     <event-toggle></event-toggle>
-    <div class="mt-5" style="border-top: 1px solid #ccc;">
+    <div class="mt-5" style="border-top: 1px solid #aaa;">
       <v-timeline>
         <v-timeline-item v-for="(event, index) in events" :key="index" color="secondary" small>
           <v-card class="elevation-2">
@@ -38,7 +37,7 @@ import EventList from "@/components/EventList";
 import EventToggle from "@/components/EventToggle";
 import GitHubLogo from "@/components/GitHubLogo";
 export default {
-  components: { Trigger, EventList, EventToggle,GitHubLogo },
+  components: { Trigger, EventList, EventToggle, GitHubLogo },
   data() {
     return {
       events: [],
