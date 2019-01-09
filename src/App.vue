@@ -1,6 +1,6 @@
 <template>
   <v-app>
-    <!-- <nav-primary></nav-primary> -->
+    <nav-primary></nav-primary>
     <div v-if="isLoading" style="z-index: 1000">
       <v-progress-linear
         :indeterminate="true"
