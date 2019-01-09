@@ -1,6 +1,6 @@
 # git-timeline
 
-> Intersect Observer demo
+> Intersect Observer demo w/[Vuetify](https://vuetifyjs.com) timeline
 
 ## Project setup
 
@@ -11,6 +11,7 @@ npm install
 ### Compiles and hot-reloads for development
 
 ```
+
 npm run serve
 ```
 
@@ -23,3 +24,7 @@ npm run build
 ## Demo
 
 https://activity.icjia.cloud
+
+## Notes
+
+- Rename `.env-sample` to `.env` and add your GitHub personal access token.

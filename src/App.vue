@@ -1,6 +1,6 @@
 <template>
   <v-app>
-    <nav-primary></nav-primary>
+    <loader></loader>
     <div v-if="isLoading" style="z-index: 1000">
       <v-progress-linear
         :indeterminate="true"
@@ -17,11 +17,11 @@
 </template>
 
 <script>
-import NavPrimary from "@/components/NavPrimary";
+import Loader from "@/components/Loader";
 export default {
   name: "App",
   components: {
-    NavPrimary
+    Loader
   },
   computed: {
     isLoading() {

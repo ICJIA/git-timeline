@@ -2,24 +2,26 @@
 
 <template>
   <v-container style="margin-top: 80px">
-    <v-timeline>
-      <v-timeline-item v-for="(event, index) in events" :key="index" color="secondary" small>
-        <v-card class="elevation-2">
-          <v-card-title class="headline">{{displayDate(event)}}</v-card-title>
-          <v-card-text>
-            <span v-for="(e, index) in event" :key="index">
-              <div class="mb-5" v-html="displayEvent(e)"></div>
-            </span>
-          </v-card-text>
-        </v-card>
-      </v-timeline-item>
-    </v-timeline>
-    <Trigger @triggerIntersected="loadMore"/>
-    <div v-if="isLastPage" class="text-xs-center mt-5">
-      <h1>END OF RECENT ACTIVITY</h1>
-      <h3 class="mt-3 mb-5">
-        <a href="https://github.com/icjia">https://github.com/icjia</a>
-      </h3>
+    <event-toggle></event-toggle>
+    <div class="mt-5" style="border-top: 1px solid #ccc;">
+      <v-timeline>
+        <v-timeline-item v-for="(event, index) in events" :key="index" color="secondary" small>
+          <v-card class="elevation-2">
+            <v-card-title class="headline">{{displayDate(event)}}</v-card-title>
+            <v-card-text>
+              <event-list v-for="(e, index) in event" :key="index" :event="e"></event-list>
+            </v-card-text>
+          </v-card>
+        </v-timeline-item>
+      </v-timeline>
+
+      <Trigger @triggerIntersected="loadMore"/>
+      <div v-if="isLastPage" class="text-xs-center mt-5">
+        <h1>END OF RECENT ACTIVITY</h1>
+        <h3 class="mt-3 mb-5">
+          <a href="https://github.com/icjia">https://github.com/icjia</a>
+        </h3>
+      </div>
     </div>
   </v-container>
 </template>
@@ -31,8 +33,10 @@ import config from "@/config";
 const parse = require("parse-link-header");
 import moment from "moment";
 import Trigger from "@/components/Trigger";
+import EventList from "@/components/EventList";
+import EventToggle from "@/components/EventToggle";
 export default {
-  components: { Trigger },
+  components: { Trigger, EventList, EventToggle },
   data() {
     return {
       events: [],
@@ -46,7 +50,8 @@ export default {
   },
 
   mounted() {
-    console.log(this.page);
+    // console.log(this.page);
+
     this.$store.commit("START_LOADER");
     axios
       .get(`/users/${config.user}/events?page=1&per_page=${config.perPage}`, {
@@ -59,7 +64,8 @@ export default {
         this.data = response.data;
 
         this.structureEvents(this.data);
-        //console.log(this.pushEvents);
+        this.$forceUpdate;
+
         this.$store.commit("STOP_LOADER");
       })
       .catch(err => {
@@ -106,10 +112,6 @@ export default {
       }
     },
     structureEvents(data) {
-      this.startDate = moment(data[0]["created_at"]);
-      this.endDate = moment(data[data.length - 1]["created_at"]);
-      this.duration = this.startDate.diff(this.endDate, "days");
-
       data.forEach(e => {
         let created_at_short = moment(e.created_at).format("YYYY-MM-DD");
         e.created_at_short = created_at_short;
@@ -119,80 +121,17 @@ export default {
         .value();
 
       this.events = result;
-      this.$forceUpdate();
+      this.$forceUpdate;
     },
-    displayEvent(event) {
-      let type, repo, message, time, repoURL, commitURL;
-      let baseURL = "https://github.com/";
-      switch (event.type) {
-        case "PushEvent":
-          type = "Pushed Commit";
-          repo = event.repo.name;
-          repoURL = `${baseURL}${event.repo.name}`;
-          message = event.payload.commits[0].message;
-          time = moment(event.created_at).format("h:mm a");
-          break;
-        case "CreateEvent":
-          type = "Created New Repository";
-          repo = event.repo.name;
-          repoURL = `${baseURL}${event.repo.name}`;
-          message = "";
-          time = moment(event.created_at).format("h:mm a");
-          break;
-        case "ReleaseEvent":
-          type = "Released New Version";
-          repo = event.repo.name;
-          repoURL = `${baseURL}${event.repo.name}`;
-          message = event.payload.release.tag_name;
-          time = moment(event.created_at).format("h:mm a");
-          break;
-        case "WatchEvent":
-          type = "Began Watching";
-          repo = event.repo.name;
-          repoURL = `${baseURL}${event.repo.name}`;
-          message = "";
-          time = "";
-          break;
-        case "DeleteEvent":
-          type = "Deleted Repository";
-          repo = event.repo.name;
-          repoURL = `${baseURL}${event.repo.name}`;
-          message = "";
-          time = "";
-          break;
-        case "PullRequestEvent":
-          type = "Pull Request";
-          repo = event.repo.name;
-          repoURL = `${baseURL}${event.repo.name}`;
-          message = event.payload.pull_request.title;
-          time = moment(event.created_at).format("h:mm a");
-          break;
-        case "IssueCommentEvent":
-          type = "Issued Comment";
-          repo = event.repo.name;
-          repoURL = `${baseURL}${event.repo.name}`;
-          message = `
-          <h4>${event.payload.issue.title}</h4>
-          <p class="ml-3 mr-3 mt-2">${event.payload.comment.body}</p>`;
-          time = moment(event.created_at).format("h:mm a");
-          break;
-        case "PublicEvent":
-          type = "Made Private Repo Public";
-          repo = event.repo.name;
-          repoURL = `${baseURL}${event.repo.name}`;
-          message = ``;
-          time = moment(event.created_at).format("h:mm a");
-          break;
-      }
-      let template = ` 
-      <h3>${time}</h3>
-      <h2>${type}</h2>
-      <h4><a href="${repoURL}">${repo}</a></h4>
-      <p>${message}</p>`;
-      return template;
-    },
+
     displayDate(event) {
       return moment(event[0].created_at_short).format("dddd, MMMM DD, YYYY");
+    },
+    groupEvents(event) {
+      let result = _.chain(event)
+        .groupBy("repo.name")
+        .value();
+      return result;
     }
   },
   computed: {
