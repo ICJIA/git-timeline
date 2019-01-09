@@ -1,6 +1,6 @@
 # git-timeline
 
-> Intersect Observer demo w/[Vuetify](https://vuetifyjs.com) timeline
+> Intersection Observer demo w/[Vuetify](https://vuetifyjs.com) timeline
 
 ## Project setup
 

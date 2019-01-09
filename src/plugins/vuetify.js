@@ -9,9 +9,7 @@ Vue.use(Vuetify, {
     secondary: colors.blue.base,
     accent: colors.pink.base,
     error: colors.red.base,
-    warning: colors.yellow.base,
-    info: "colors.blue-grey.base",
-    success: "colors.light-green.base"
+    warning: colors.yellow.base
   },
   customProperties: true,
   iconfont: "md"
