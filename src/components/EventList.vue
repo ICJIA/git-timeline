@@ -38,6 +38,7 @@ export default {
         this.type = "Pushed Commit";
         this.repo = this.event.repo.name;
         this.repoURL = `${baseURL}${this.event.repo.name}`;
+        //TODO: Fix this to iterate through array
         this.message = this.event.payload.commits[0].message;
         this.sha = this.event.payload.commits[0].sha;
         this.shaURL = this.baseURL + this.repo + "/commit/" + this.sha;
