@@ -2,10 +2,14 @@
   <div class="mb-5" :class="getStatus(event.type)">
     <h3>{{time}}</h3>
     <h2>{{type}}</h2>
-    <h4>
+    <h4 class="mb-0">
       <a :href="repoURL">{{repo}}</a>
     </h4>
-    <p>{{message}}</p>
+
+    <a :href="shaURL" style="font-size: 14px">
+      <span v-if="sha">{{sha.substring(0,4) + ' - '}}</span>
+      {{message}}
+    </a>
   </div>
 </template>
 
@@ -21,17 +25,21 @@ export default {
       repoURL: "",
       message: "",
       time: "",
-      typeRef: ""
+      typeRef: "",
+      sha: "",
+      baseURL: "https://github.com/"
     };
   },
   mounted() {
-    let baseURL = "https://github.com/";
+    let baseURL = this.baseURL;
     switch (this.event.type) {
       case "PushEvent":
         this.type = "Pushed Commit";
         this.repo = this.event.repo.name;
         this.repoURL = `${baseURL}${this.event.repo.name}`;
         this.message = this.event.payload.commits[0].message;
+        this.sha = this.event.payload.commits[0].sha;
+        this.shaURL = this.baseURL + this.repo + "/commit/" + this.sha;
         this.time = moment(this.event.created_at).format("h:mm a");
         break;
       case "CreateEvent":
