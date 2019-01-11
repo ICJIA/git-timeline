@@ -49,8 +49,4 @@ export default {
 </script>
 
 <style>
-.trigger {
-  min-width: 1px !important;
-  min-height: 1px !important;
-}
 </style>

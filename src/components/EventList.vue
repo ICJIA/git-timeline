@@ -27,6 +27,7 @@ export default {
       time: "",
       typeRef: "",
       sha: "",
+      shaURL: "",
       baseURL: "https://github.com/"
     };
   },
