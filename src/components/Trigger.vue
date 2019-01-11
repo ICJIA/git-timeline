@@ -41,8 +41,10 @@ export default {
 
   methods: {
     handleIntersect(entry) {
-      if (entry.isIntersecting) this.$emit("triggerIntersected");
-      console.log("triggerIntersected");
+      if (entry.isIntersecting) {
+        this.$emit("triggerIntersected");
+        console.log("triggerIntersected");
+      }
     }
   }
 };
